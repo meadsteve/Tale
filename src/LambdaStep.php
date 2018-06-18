@@ -14,9 +14,13 @@ class LambdaStep implements Step
      */
     private $compensateHandler;
 
-    public function __construct(callable $execute, callable $compensate)
+    public function __construct(callable $execute, callable $compensate = null)
     {
         $this->executeHandler = $execute;
+        if ($compensate === null) {
+            $compensate = function () {
+            };
+        }
         $this->compensateHandler = $compensate;
     }
 
