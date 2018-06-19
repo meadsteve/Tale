@@ -24,9 +24,26 @@ class Transaction
     public function run($startingState = null)
     {
         $state = $startingState;
-        foreach ($this->steps as $step) {
-            $state = $step->execute($state);
+        $completedSteps = [];
+        try {
+            foreach ($this->steps as $step) {
+                $state = $step->execute($state);
+                $completedSteps[] = new CompletedStep($step, $state);
+            }
+        } catch (\Exception $failure) {
+            $this->revertCompletedSteps($completedSteps);
+            return null;
         }
         return $state;
+    }
+
+    /**
+     * @param CompletedStep[] $completedSteps
+     */
+    private function revertCompletedSteps(array $completedSteps)
+    {
+        foreach (array_reverse($completedSteps) as $completedStep) {
+            $completedStep->step->compensate($completedStep->state);
+        }
     }
 }
