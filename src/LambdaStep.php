@@ -2,7 +2,7 @@
 
 namespace MeadSteve\Tale;
 
-class LambdaStep implements Step
+class LambdaStep implements NamedStep
 {
     /**
      * @var callable
@@ -34,5 +34,13 @@ class LambdaStep implements Step
     {
         $function = $this->compensateHandler;
         $function($state);
+    }
+
+    /**
+     * @return string the public name of this step
+     */
+    public function stepName(): string
+    {
+        return "anonymous lambda";
     }
 }

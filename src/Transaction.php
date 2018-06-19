@@ -27,7 +27,7 @@ class Transaction
 
     public function addStep(Step $step): Transaction
     {
-        $this->logger->debug("Adding anonymous step to transaction definition");
+        $this->logger->debug("Adding {$this->stepName($step)} to transaction definition");
         $this->steps[] = $step;
         return $this;
     }
@@ -45,12 +45,12 @@ class Transaction
         $completedSteps = [];
         foreach ($this->steps as $key => $step) {
             try {
-                $this->logger->debug("Executing anonymous step [$key]");
+                $this->logger->debug("Executing {$this->stepName($step)} step [$key]");
                 $state = $step->execute($state);
                 $completedSteps[] = new CompletedStep($step, $state, $key);
-                $this->logger->debug("Execution of anonymous step [$key] complete");
+                $this->logger->debug("Execution of {$this->stepName($step)} step [$key] complete");
             } catch (\Exception $failure) {
-                $this->logger->debug("Failed executing anonymous step [$key]");
+                $this->logger->debug("Failed executing {$this->stepName($step)} step [$key]");
                 $this->revertCompletedSteps($completedSteps);
                 $this->logger->debug("Finished compensating all previous steps");
                 return null;
@@ -65,9 +65,19 @@ class Transaction
     private function revertCompletedSteps(array $completedSteps)
     {
         foreach (array_reverse($completedSteps) as $completedStep) {
-            $this->logger->debug("Compensating for step {$completedStep->stepId}");
-            $completedStep->step->compensate($completedStep->state);
-            $this->logger->debug("Compensation complete for step {$completedStep->stepId}");
+            $step = $completedStep->step;
+            $stepId = $completedStep->stepId;
+            $this->logger->debug("Compensating for step {$this->stepName($step)} [{$stepId}]");
+            $step->compensate($completedStep->state);
+            $this->logger->debug("Compensation complete for step {$this->stepName($step)} [{$stepId}]");
         }
+    }
+
+    private function stepName(Step $step): string
+    {
+        if ($step instanceof NamedStep) {
+            return "`{$step->stepName()}`";
+        }
+        return "anonymous step";
     }
 }

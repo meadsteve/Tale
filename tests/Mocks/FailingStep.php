@@ -2,12 +2,10 @@
 
 namespace MeadSteve\Tale\Tests\Mocks;
 
-use MeadSteve\Tale\Step;
+use MeadSteve\Tale\NamedStep;
 
-class FailingStep implements Step
+class FailingStep implements NamedStep
 {
-
-
     public function execute($state)
     {
         throw new \Exception("I always fail");
@@ -17,5 +15,13 @@ class FailingStep implements Step
     public function compensate($state): void
     {
         // Not Needed
+    }
+
+    /**
+     * @return string the public name of this step
+     */
+    public function stepName(): string
+    {
+        return "step that will fail";
     }
 }
