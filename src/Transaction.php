@@ -3,6 +3,9 @@
 namespace MeadSteve\Tale;
 
 use MeadSteve\Tale\Execution\CompletedStep;
+use MeadSteve\Tale\Execution\Failure;
+use MeadSteve\Tale\Execution\Success;
+use MeadSteve\Tale\Execution\TransactionResult;
 use MeadSteve\Tale\Steps\NamedStep;
 use MeadSteve\Tale\Steps\Step;
 use Psr\Log\LoggerInterface;
@@ -39,9 +42,9 @@ class Transaction
      * Runs each step in the transaction
      *
      * @param mixed $startingState the state to pass in to the first step
-     * @return mixed the final state
+     * @return TransactionResult
      */
-    public function run($startingState = null)
+    public function run($startingState = null): TransactionResult
     {
         $this->logger->debug("Running transaction");
         $state = $startingState;
@@ -56,10 +59,10 @@ class Transaction
                 $this->logger->debug("Failed executing {$this->stepName($step)} step [$key]");
                 $this->revertCompletedSteps($completedSteps);
                 $this->logger->debug("Finished compensating all previous steps");
-                return null;
+                return new Failure($failure);
             }
         }
-        return $state;
+        return new Success($state);
     }
 
     /**

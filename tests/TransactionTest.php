@@ -2,6 +2,7 @@
 
 namespace MeadSteve\Tale\Tests;
 
+use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Steps\LambdaStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\FailingStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\MockStep;
@@ -25,7 +26,7 @@ class TransactionTest extends TestCase
     public function testExecutesStepWithStartingState()
     {
         $mockStep = new MockStep();
-        $transaction = (new Transaction($this->logger))->addStep($mockStep);
+        $transaction = (new Transaction())->addStep($mockStep);
         $transaction->run("starting_state");
 
         $this->assertEquals("starting_state", $mockStep->executedState);
@@ -43,11 +44,11 @@ class TransactionTest extends TestCase
                 return $state . "|two";
             }
         );
-        $transaction = (new Transaction($this->logger))
+        $transaction = (new Transaction())
             ->addStep($stepOne)
             ->addStep($stepTwo);
 
-        $this->assertEquals("zero|one|two", $transaction->run("zero"));
+        $this->assertEquals("zero|one|two", $transaction->run("zero")->finalState());
     }
 
     public function testAfterAFailedStepEachPreviousStepIsReverted()
@@ -87,5 +88,31 @@ class TransactionTest extends TestCase
             'Reverted step 1 from: zero|one'
         ];
         $this->assertEquals($events, $expectedEvents);
+    }
+
+    public function testAFailObjectWithTheFailingExceptionIsReturned()
+    {
+
+        $transaction = (new Transaction())
+            ->addStep(new FailingStep());
+
+        $result = $transaction->run("zero");
+
+        $this->assertInstanceOf(Failure::class, $result);
+        $this->assertInstanceOf(\Exception::class, $result->exception);
+    }
+
+    public function testTransactionFailuresCanBeRethrown()
+    {
+
+        $transaction = (new Transaction())
+            ->addStep(new FailingStep());
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("I always fail");
+
+        $transaction
+            ->run("zero")
+            ->throwFailures();
     }
 }
