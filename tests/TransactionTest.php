@@ -40,23 +40,24 @@ class TransactionTest extends TestCase
 
     public function testAfterAFailedStepEachPreviousStepIsReverted()
     {
-        $stepOneReverted = null;
+        $events = [];
         $stepOne = new LambdaStep(
-            function ($state) {
-                return $state . "|one";
+            function ($state) use (&$events) {
+                $events[] = "Ran step 1 with: " . $state;
+                return "$state|one";
             },
-            function ($stateToRevert) use (&$stepOneReverted) {
-                $stepOneReverted = $stateToRevert;
+            function ($stateToRevert) use (&$events) {
+                $events[] = "Reverted step 1 from: " . $stateToRevert;
             }
         );
 
-        $stepTwoReverted = null;
         $stepTwo = new LambdaStep(
-            function ($state) {
-                return $state . "|two";
+            function ($state) use (&$events) {
+                $events[] = "Ran step 2 with: " . $state;
+                return "$state|two";
             },
-            function ($stateToRevert) use (&$stepTwoReverted) {
-                $stepTwoReverted = $stateToRevert;
+            function ($stateToRevert) use (&$events) {
+                $events[] = "Reverted step 2 from: " . $stateToRevert;
             }
         );
 
@@ -67,7 +68,12 @@ class TransactionTest extends TestCase
 
         $transaction->run("zero");
 
-        $this->assertEquals("zero|one", $stepOneReverted);
-        $this->assertEquals("zero|one|two", $stepTwoReverted);
+        $expectedEvents = [
+            'Ran step 1 with: zero',
+            'Ran step 2 with: zero|one',
+            'Reverted step 2 from: zero|one|two',
+            'Reverted step 1 from: zero|one'
+        ];
+        $this->assertEquals($events, $expectedEvents);
     }
 }
