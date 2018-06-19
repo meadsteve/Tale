@@ -1,8 +1,8 @@
 <?php
 
-namespace MeadSteve\Tale\Tests\Mocks;
+namespace MeadSteve\Tale\Tests\Steps\Mocks;
 
-use MeadSteve\Tale\NamedStep;
+use MeadSteve\Tale\Steps\NamedStep;
 
 class MockStep implements NamedStep
 {

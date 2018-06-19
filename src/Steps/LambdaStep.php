@@ -1,6 +1,8 @@
 <?php
 
-namespace MeadSteve\Tale;
+namespace MeadSteve\Tale\Steps;
+
+use MeadSteve\Tale\Steps\NamedStep;
 
 class LambdaStep implements NamedStep
 {

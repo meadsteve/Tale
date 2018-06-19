@@ -2,9 +2,9 @@
 
 namespace MeadSteve\Tale\Tests;
 
-use MeadSteve\Tale\LambdaStep;
-use MeadSteve\Tale\Tests\Mocks\FailingStep;
-use MeadSteve\Tale\Tests\Mocks\MockStep;
+use MeadSteve\Tale\Steps\LambdaStep;
+use MeadSteve\Tale\Tests\Steps\Mocks\FailingStep;
+use MeadSteve\Tale\Tests\Steps\Mocks\MockStep;
 use MeadSteve\Tale\Transaction;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

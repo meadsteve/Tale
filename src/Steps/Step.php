@@ -1,6 +1,6 @@
 <?php
 
-namespace MeadSteve\Tale;
+namespace MeadSteve\Tale\Steps;
 
 interface Step
 {

@@ -1,6 +1,8 @@
 <?php
 
-namespace MeadSteve\Tale;
+namespace MeadSteve\Tale\Execution;
+
+use MeadSteve\Tale\Steps\Step;
 
 class CompletedStep
 {

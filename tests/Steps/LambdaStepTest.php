@@ -1,8 +1,8 @@
 <?php
 
-namespace MeadSteve\Tale\Tests;
+namespace MeadSteve\Tale\Tests\Steps;
 
-use MeadSteve\Tale\LambdaStep;
+use MeadSteve\Tale\Steps\LambdaStep;
 use PHPUnit\Framework\TestCase;
 
 class LambdaStepTest extends TestCase

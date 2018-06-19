@@ -2,6 +2,9 @@
 
 namespace MeadSteve\Tale;
 
+use MeadSteve\Tale\Execution\CompletedStep;
+use MeadSteve\Tale\Steps\NamedStep;
+use MeadSteve\Tale\Steps\Step;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
