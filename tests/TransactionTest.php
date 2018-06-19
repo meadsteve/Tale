@@ -115,4 +115,18 @@ class TransactionTest extends TestCase
             ->run("zero")
             ->throwFailures();
     }
+
+    public function testThrowingASuccessDoesNothingButPassTheResultThrough()
+    {
+
+        $transaction = (new Transaction())
+            ->addStep(new MockStep());
+
+        $result = $transaction
+            ->run("expected_result")
+            ->throwFailures()
+            ->finalState();
+
+        $this->assertEquals("expected_result", $result);
+    }
 }

@@ -5,7 +5,7 @@ namespace MeadSteve\Tale\Execution;
 interface TransactionResult
 {
     /**
-     * @return void
+     * @return TransactionResult
      */
     public function throwFailures();
 

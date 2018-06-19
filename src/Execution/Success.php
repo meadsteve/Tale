@@ -19,7 +19,8 @@ class Success implements TransactionResult
 
     public function throwFailures()
     {
-        // noop - A success isn't a failure
+        // Nothing to be thrown as this is a success
+        return $this;
     }
 
     public function finalState()
