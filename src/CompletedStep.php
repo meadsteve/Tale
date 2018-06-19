@@ -15,12 +15,19 @@ class CompletedStep
     public $state;
 
     /**
+     * @var string
+     */
+    public $stepId;
+
+    /**
      * @param Step $step
      * @param mixed $state the state after running the state above
+     * @param string $stepId
      */
-    public function __construct(Step $step, $state)
+    public function __construct(Step $step, $state, $stepId)
     {
         $this->step = $step;
         $this->state = $state;
+        $this->stepId = $stepId;
     }
 }

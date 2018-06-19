@@ -7,13 +7,25 @@ use MeadSteve\Tale\Tests\Mocks\FailingStep;
 use MeadSteve\Tale\Tests\Mocks\MockStep;
 use MeadSteve\Tale\Transaction;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class TransactionTest extends TestCase
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function setUp()
+    {
+        $this->logger = new \Monolog\Logger("log");
+        $this->logger->pushHandler(new \Monolog\Handler\ErrorLogHandler());
+    }
+
     public function testExecutesStepWithStartingState()
     {
         $mockStep = new MockStep();
-        $transaction = (new Transaction())->addStep($mockStep);
+        $transaction = (new Transaction($this->logger))->addStep($mockStep);
         $transaction->run("starting_state");
 
         $this->assertEquals("starting_state", $mockStep->executedState);
@@ -31,7 +43,7 @@ class TransactionTest extends TestCase
                 return $state . "|two";
             }
         );
-        $transaction = (new Transaction())
+        $transaction = (new Transaction($this->logger))
             ->addStep($stepOne)
             ->addStep($stepTwo);
 
@@ -61,7 +73,7 @@ class TransactionTest extends TestCase
             }
         );
 
-        $transaction = (new Transaction())
+        $transaction = (new Transaction($this->logger))
             ->addStep($stepOne)
             ->addStep($stepTwo)
             ->addStep(new FailingStep());
