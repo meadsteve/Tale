@@ -49,7 +49,7 @@ class BookFlightStep implements Step
     {
         $state['flightsBookingRef'] = $this->flightApi->buildBooking(
             $state['Destination'], 
-            $state['Origin'].
+            $state['Origin'],
             self::RETURN,
             $this->airline
         );
