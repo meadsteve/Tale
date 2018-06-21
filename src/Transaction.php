@@ -86,15 +86,14 @@ class Transaction
      */
     private function finaliseSteps($completedSteps)
     {
-        $stepsToFinalise = array_filter($completedSteps, function (CompletedStep $x) {
-            return $x->step instanceof FinalisingStep;
-        });
-        foreach ($stepsToFinalise as $completedStep) {
+        foreach ($completedSteps as $completedStep) {
             $step = $completedStep->step;
-            $stepId = $completedStep->stepId;
-            $this->logger->debug("Finalising step {$this->stepName($step)} [{$stepId}]");
-            $step->finalise($completedStep->state);
-            $this->logger->debug("Finalising step {$this->stepName($step)} [{$stepId}]");
+            if ($step instanceof FinalisingStep) {
+                $stepId = $completedStep->stepId;
+                $this->logger->debug("Finalising step {$this->stepName($step)} [{$stepId}]");
+                $step->finalise($completedStep->state);
+                $this->logger->debug("Finalising step {$this->stepName($step)} [{$stepId}]");
+            }
         }
     }
 
