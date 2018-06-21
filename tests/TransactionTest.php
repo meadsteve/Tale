@@ -90,6 +90,24 @@ class TransactionTest extends TestCase
         $this->assertEquals($events, $expectedEvents);
     }
 
+    public function testErrorsAreCaughtAsWellAsExceptions()
+    {
+        $failureStep = new LambdaStep(
+            function ($state) {
+                throw new \Error("I'm a little error. Short and bad.");
+            },
+            function ($stateToRevert) {
+            }
+        );
+
+        $transaction = (new Transaction($this->logger))
+            ->addStep($failureStep);
+
+        $result = $transaction->run();
+
+        $this->assertInstanceOf(\Error::class, $result->finalState());
+    }
+
     public function testAFailObjectWithTheFailingExceptionIsReturned()
     {
 

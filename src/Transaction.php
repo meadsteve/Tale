@@ -55,7 +55,7 @@ class Transaction
                 $state = $step->execute($state);
                 $completedSteps[] = new CompletedStep($step, $state, $key);
                 $this->logger->debug("Execution of {$this->stepName($step)} step [$key] complete");
-            } catch (\Exception $failure) {
+            } catch (\Throwable $failure) {
                 $this->logger->debug("Failed executing {$this->stepName($step)} step [$key]");
                 $this->revertCompletedSteps($completedSteps);
                 $this->logger->debug("Finished compensating all previous steps");

@@ -6,11 +6,11 @@ class Failure implements TransactionResult
 {
     /**
      * The reason the transaction failed
-     * @var \Exception
+     * @var \Throwable
      */
     public $exception;
 
-    public function __construct(\Exception $exception)
+    public function __construct(\Throwable $exception)
     {
         $this->exception = $exception;
     }
