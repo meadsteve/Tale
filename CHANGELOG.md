@@ -1,7 +1,10 @@
 # Changelog
 
 ## Unreleased changes
+
 ### Enhancements
+* Add finalising Step interface - useful for committing transactions etc.
+* Catch all Errors not just exceptions.
 
 ### Bug fixes
 
