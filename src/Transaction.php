@@ -6,6 +6,7 @@ use MeadSteve\Tale\Execution\CompletedStep;
 use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Execution\Success;
 use MeadSteve\Tale\Execution\TransactionResult;
+use MeadSteve\Tale\Steps\FinalisingStep;
 use MeadSteve\Tale\Steps\NamedStep;
 use MeadSteve\Tale\Steps\Step;
 use Psr\Log\LoggerInterface;
@@ -62,6 +63,7 @@ class Transaction
                 return new Failure($failure);
             }
         }
+        $this->finaliseSteps($completedSteps);
         return new Success($state);
     }
 
@@ -76,6 +78,23 @@ class Transaction
             $this->logger->debug("Compensating for step {$this->stepName($step)} [{$stepId}]");
             $step->compensate($completedStep->state);
             $this->logger->debug("Compensation complete for step {$this->stepName($step)} [{$stepId}]");
+        }
+    }
+
+    /**
+     * @param CompletedStep[] $completedSteps
+     */
+    private function finaliseSteps($completedSteps)
+    {
+        $stepsToFinalise = array_filter($completedSteps, function (CompletedStep $x) {
+            return $x->step instanceof FinalisingStep;
+        });
+        foreach ($stepsToFinalise as $completedStep) {
+            $step = $completedStep->step;
+            $stepId = $completedStep->stepId;
+            $this->logger->debug("Finalising step {$this->stepName($step)} [{$stepId}]");
+            $step->finalise($completedStep->state);
+            $this->logger->debug("Finalising step {$this->stepName($step)} [{$stepId}]");
         }
     }
 

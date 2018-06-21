@@ -5,6 +5,7 @@ namespace MeadSteve\Tale\Tests;
 use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Steps\LambdaStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\FailingStep;
+use MeadSteve\Tale\Tests\Steps\Mocks\MockFinalisingStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\MockStep;
 use MeadSteve\Tale\Transaction;
 use PHPUnit\Framework\TestCase;
@@ -146,5 +147,34 @@ class TransactionTest extends TestCase
             ->finalState();
 
         $this->assertEquals("expected_result", $result);
+    }
+
+    public function testFinaliseMethodsAreCalledIfTheTransactionIsASuccess()
+    {
+
+        $mockStep = new MockFinalisingStep();
+        $transaction = (new Transaction())
+            ->addStep($mockStep);
+
+        $transaction
+            ->run("expected_result")
+            ->finalState();
+
+        $this->assertEquals("expected_result", $mockStep->finalisedState);
+    }
+
+    public function testFinaliseMethodsArentCalledIfTheTransactionFails()
+    {
+
+        $mockStep = new MockFinalisingStep();
+        $transaction = (new Transaction())
+            ->addStep($mockStep)
+            ->addStep(new FailingStep());
+
+        $transaction
+            ->run("expected_result")
+            ->finalState();
+
+        $this->assertNull($mockStep->finalisedState);
     }
 }
