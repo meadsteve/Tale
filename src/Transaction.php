@@ -42,7 +42,7 @@ class Transaction
      * @param mixed $startingState the state to pass in to the first step
      * @return TransactionResult
      */
-    public function run($startingState = null): TransactionResult
+    public function run($startingState = []): TransactionResult
     {
         $this->logger->debug("Running transaction");
         $state = $startingState;
