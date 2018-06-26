@@ -27,7 +27,7 @@ class TransactionTest extends TestCase
     public function testExecutesStepWithStartingState()
     {
         $mockStep = new MockStep();
-        $transaction = (new Transaction())->addStep($mockStep);
+        $transaction = (new Transaction())->add($mockStep);
         $transaction->run("starting_state");
 
         $this->assertEquals("starting_state", $mockStep->executedState);
@@ -46,8 +46,8 @@ class TransactionTest extends TestCase
             }
         );
         $transaction = (new Transaction())
-            ->addStep($stepOne)
-            ->addStep($stepTwo);
+            ->add($stepOne)
+            ->add($stepTwo);
 
         $this->assertEquals("zero|one|two", $transaction->run("zero")->finalState());
     }
@@ -76,9 +76,9 @@ class TransactionTest extends TestCase
         );
 
         $transaction = (new Transaction($this->logger))
-            ->addStep($stepOne)
-            ->addStep($stepTwo)
-            ->addStep(new FailingStep());
+            ->add($stepOne)
+            ->add($stepTwo)
+            ->add(new FailingStep());
 
         $transaction->run("zero");
 
@@ -102,7 +102,7 @@ class TransactionTest extends TestCase
         );
 
         $transaction = (new Transaction($this->logger))
-            ->addStep($failureStep);
+            ->add($failureStep);
 
         $result = $transaction->run();
 
@@ -113,7 +113,7 @@ class TransactionTest extends TestCase
     {
 
         $transaction = (new Transaction())
-            ->addStep(new FailingStep());
+            ->add(new FailingStep());
 
         $result = $transaction->run("zero");
 
@@ -125,7 +125,7 @@ class TransactionTest extends TestCase
     {
 
         $transaction = (new Transaction())
-            ->addStep(new FailingStep());
+            ->add(new FailingStep());
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("I always fail");
@@ -139,7 +139,7 @@ class TransactionTest extends TestCase
     {
 
         $transaction = (new Transaction())
-            ->addStep(new MockStep());
+            ->add(new MockStep());
 
         $result = $transaction
             ->run("expected_result")
@@ -154,7 +154,7 @@ class TransactionTest extends TestCase
 
         $mockStep = new MockFinalisingStep();
         $transaction = (new Transaction())
-            ->addStep($mockStep);
+            ->add($mockStep);
 
         $transaction
             ->run("expected_result")
@@ -168,8 +168,8 @@ class TransactionTest extends TestCase
 
         $mockStep = new MockFinalisingStep();
         $transaction = (new Transaction())
-            ->addStep($mockStep)
-            ->addStep(new FailingStep());
+            ->add($mockStep)
+            ->add(new FailingStep());
 
         $transaction
             ->run("expected_result")

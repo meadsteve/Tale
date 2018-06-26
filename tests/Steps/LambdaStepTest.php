@@ -14,7 +14,7 @@ class LambdaStepTest extends TestCase
 
     private $state;
 
-    public function setup()
+    public function setupLamda($name = null)
     {
         $this->state = "not-run";
         $this->testedStep = new LambdaStep(function ($state) {
@@ -22,11 +22,12 @@ class LambdaStepTest extends TestCase
             return "second-state";
         }, function ($state) {
             $this->state = "compensated with " . $state;
-        });
+        }, $name);
     }
 
     public function testExecuteReturnsTheResultOfTheWrappedLambda()
     {
+        $this->setupLamda();
         $this->assertEquals(
             "second-state",
             $this->testedStep->execute("whatever")
@@ -35,13 +36,20 @@ class LambdaStepTest extends TestCase
 
     public function testExecutePassesTheProvidedStateToTheLambda()
     {
+        $this->setupLamda();
         $this->testedStep->execute("provided-state");
         $this->assertEquals("run with provided-state", $this->state);
     }
 
     public function testCompensatePassesTheProvidedStateToTheLambda()
     {
+        $this->setupLamda();
         $this->testedStep->compensate("state-to-revert");
         $this->assertEquals("compensated with state-to-revert", $this->state);
+    }
+    public function testLambdaStepsCanBeNamed()
+    {
+        $this->setupLamda("my name");
+        $this->assertEquals("my name", $this->testedStep->stepName());
     }
 }

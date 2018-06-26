@@ -26,17 +26,14 @@ class Transaction
 
     public function __construct(LoggerInterface $logger = null)
     {
-        if ($logger === null) {
-            $logger = new NullLogger();
-        }
-        $this->logger = $logger;
+        $this->logger = $logger ?? new NullLogger();
     }
 
-    public function addStep(Step $step): Transaction
+
+    public function add(...$args): Transaction
     {
-        $this->logger->debug("Adding {$this->stepName($step)} to transaction definition");
-        $this->steps[] = $step;
-        return $this;
+        $step = StepBuilder::build(...$args);
+        return $this->addStep($step);
     }
 
     /**
@@ -65,6 +62,13 @@ class Transaction
         }
         $this->finaliseSteps($completedSteps);
         return new Success($state);
+    }
+
+    private function addStep(Step $step): Transaction
+    {
+        $this->logger->debug("Adding {$this->stepName($step)} to transaction definition");
+        $this->steps[] = $step;
+        return $this;
     }
 
     /**

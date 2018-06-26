@@ -2,8 +2,6 @@
 
 namespace MeadSteve\Tale\Steps;
 
-use MeadSteve\Tale\Steps\NamedStep;
-
 class LambdaStep implements NamedStep
 {
     /**
@@ -16,14 +14,18 @@ class LambdaStep implements NamedStep
      */
     private $compensateHandler;
 
-    public function __construct(callable $execute, callable $compensate = null)
+    /**
+     * @var string
+     */
+    private $name;
+
+    public function __construct(callable $execute, callable $compensate = null, string $name = null)
     {
         $this->executeHandler = $execute;
-        if ($compensate === null) {
-            $compensate = function () {
-            };
-        }
-        $this->compensateHandler = $compensate;
+        $this->compensateHandler = $compensate ?? function () {
+        };
+
+        $this->name = $name ?? "anonymous lambda";
     }
 
     public function execute($state)
@@ -43,6 +45,6 @@ class LambdaStep implements NamedStep
      */
     public function stepName(): string
     {
-        return "anonymous lambda";
+        return $this->name;
     }
 }

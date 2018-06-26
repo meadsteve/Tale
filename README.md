@@ -70,10 +70,10 @@ request a distributed transaction can be built:
 
 ```php
        $transaction = (new Transaction())
-            ->addStep(new DebitCustomerBalance($user))
-            ->addStep(new BookFlightStep($airlineOfChoice))
-            ->addStep(new BookHotelStep())
-            ->addStep(new EmailCustomerDetailsOfBookingStep())
+            ->add(new DebitCustomerBalance($user))
+            ->add(new BookFlightStep($airlineOfChoice))
+            ->add(new BookHotelStep())
+            ->add(new EmailCustomerDetailsOfBookingStep())
 
         $result = $transaction
             ->run($startingData)
