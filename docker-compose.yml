@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+    tale:
+        build:
+            context: ./
+        volumes:
+        - "./src:/app/src/"
+        - "./tests:/app/tests/"
+        - "./composer.json:/app/composer.json"
