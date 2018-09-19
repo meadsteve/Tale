@@ -6,5 +6,5 @@ php:
 install: composer install
 script:
   - ./vendor/bin/phpcs --standard=PSR2 src/ tests/
-  - ./vendor/bin/phpunit tests
+  - ./vendor/bin/phpunit -c phpunit.xml
   - ./vendor/bin/phpstan analyse src --level max
