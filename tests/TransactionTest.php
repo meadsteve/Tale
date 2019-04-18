@@ -2,6 +2,7 @@
 
 namespace MeadSteve\Tale\Tests;
 
+use Gamez\Psr\Log\TestLogger;
 use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Steps\LambdaStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\FailingStep;
@@ -164,5 +165,15 @@ class TransactionTest extends TestCase
             ->finalState();
 
         $this->assertNull($mockStep->finalisedState);
+    }
+
+    public function testProvidedLoggerGetsSomeDebugLogs()
+    {
+        $mockStep = new MockStep();
+        $mockLogger = new TestLogger();
+        $transaction = (new Transaction($mockLogger))->add($mockStep);
+        $transaction->run("starting_state");
+
+        $this->assertTrue($mockLogger->log->countRecordsWithLevel("debug") > 0);
     }
 }
