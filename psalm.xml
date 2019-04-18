@@ -28,7 +28,7 @@
         <InternalProperty errorLevel="info" />
         <InternalClass errorLevel="info" />
 
-        <MissingClosureReturnType errorLevel="info" />
+        <MissingClosureReturnType errorLevel="suppress" />
         <MissingReturnType errorLevel="info" />
         <MissingPropertyType errorLevel="info" />
         <InvalidDocblock errorLevel="info" />
