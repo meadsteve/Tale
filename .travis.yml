@@ -1,10 +1,12 @@
 language: php
 php:
-  - 7.1
-  - 7.2
+  - "7.1"
+  - "7.2"
+  - "7.3"
 
 install: composer install
 script:
-  - ./vendor/bin/phpcs --standard=PSR2 src/ tests/
-  - ./vendor/bin/phpunit -c phpunit.xml
   - ./vendor/bin/phpstan analyse src --level max
+  - ./vendor/bin/psalm
+  - ./vendor/bin/phpunit -c phpunit.xml
+  - ./vendor/bin/phpcs --standard=PSR2 src/ tests/

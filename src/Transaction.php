@@ -74,7 +74,7 @@ class Transaction
     /**
      * @param CompletedStep[] $completedSteps
      */
-    private function revertCompletedSteps(array $completedSteps)
+    private function revertCompletedSteps(array $completedSteps): void
     {
         foreach (array_reverse($completedSteps) as $completedStep) {
             $step = $completedStep->step;
@@ -88,7 +88,7 @@ class Transaction
     /**
      * @param CompletedStep[] $completedSteps
      */
-    private function finaliseSteps($completedSteps)
+    private function finaliseSteps($completedSteps): void
     {
         foreach ($completedSteps as $completedStep) {
             $step = $completedStep->step;
