@@ -8,6 +8,18 @@
 
 ### Backwards incompatible changes
 
+## v0.3.0 (2019-04-18)
+
+### Enhancements
+* Failures from applying compensations are caught allowing the process
+to continue and are thrown at the end instead. 
+
+### Bug fixes
+None
+
+### Backwards incompatible changes
+None
+
 ## v0.2.0 (2018-06-28)
 
 ### Enhancements

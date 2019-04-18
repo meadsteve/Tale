@@ -3,11 +3,13 @@
 namespace MeadSteve\Tale\Tests;
 
 use Gamez\Psr\Log\TestLogger;
+use MeadSteve\Tale\Exceptions\FailedApplyingAllCompensations;
 use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Steps\LambdaStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\FailingStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\MockFinalisingStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\MockStep;
+use MeadSteve\Tale\Tests\Steps\Mocks\StepWithFailingCompensate;
 use MeadSteve\Tale\Transaction;
 use PHPUnit\Framework\TestCase;
 
@@ -175,5 +177,26 @@ class TransactionTest extends TestCase
         $transaction->run("starting_state");
 
         $this->assertTrue($mockLogger->log->countRecordsWithLevel("debug") > 0);
+    }
+
+    public function testFailuresInCompensationAreCaught()
+    {
+
+        $firstStep = new MockStep();
+        $transaction = (new Transaction())
+            ->add($firstStep)
+            ->add(new StepWithFailingCompensate())
+            ->add(new FailingStep());
+
+        $this->expectException(FailedApplyingAllCompensations::class);
+        $this->expectExceptionMessage("Failed applying all compensation steps");
+
+        try {
+            $transaction->run("some payload");
+        } finally {
+            # The reverted state should not be null as it should have
+            # been compensated
+            $this->assertNotNull($firstStep->revertedState);
+        }
     }
 }

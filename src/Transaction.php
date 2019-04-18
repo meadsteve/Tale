@@ -2,6 +2,7 @@
 
 namespace MeadSteve\Tale;
 
+use MeadSteve\Tale\Exceptions\FailedApplyingAllCompensations;
 use MeadSteve\Tale\Execution\CompletedStep;
 use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Execution\Success;
@@ -87,12 +88,20 @@ class Transaction
      */
     private function revertCompletedSteps(array $completedSteps): void
     {
+        $errors = [];
         foreach (array_reverse($completedSteps) as $completedStep) {
-            $step = $completedStep->step;
-            $stepId = $completedStep->stepId;
-            $this->logger->debug("Compensating for step {$this->stepName($step)} [{$stepId}]");
-            $step->compensate($completedStep->state);
-            $this->logger->debug("Compensation complete for step {$this->stepName($step)} [{$stepId}]");
+            try {
+                $step = $completedStep->step;
+                $stepId = $completedStep->stepId;
+                $this->logger->debug("Compensating for step {$this->stepName($step)} [{$stepId}]");
+                $step->compensate($completedStep->state);
+                $this->logger->debug("Compensation complete for step {$this->stepName($step)} [{$stepId}]");
+            } catch (\Throwable $error) {
+                $errors[] = $error;
+            }
+        }
+        if (sizeof($errors) !== 0) {
+            throw new FailedApplyingAllCompensations($errors);
         }
     }
 
