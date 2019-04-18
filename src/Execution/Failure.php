@@ -15,6 +15,9 @@ class Failure implements TransactionResult
         $this->exception = $exception;
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function throwFailures()
     {
         throw $this->exception;
