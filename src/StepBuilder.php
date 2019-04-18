@@ -10,7 +10,7 @@ class StepBuilder
 {
 
     /**
-     * @param mixed[] ...$args
+     * @param mixed ...$args
      * @return Step
      */
     public static function build(...$args): Step

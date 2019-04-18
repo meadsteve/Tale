@@ -30,6 +30,17 @@ class Transaction
     }
 
 
+    /**
+     * Adds a step to the transaction. With the following args:
+     *
+     *    (Step)                  -> Adds the step to transaction
+     *    (Closure, Closure)      -> Creates a step with the first lambda
+     *                               as the execute and the second as compensate
+     *    (Closure, Closure, str) -> Same as above but named
+     *
+     * @param mixed ...$args
+     * @return Transaction
+     */
     public function add(...$args): Transaction
     {
         $step = StepBuilder::build(...$args);
