@@ -28,15 +28,15 @@ class DebitCustomerBalanceStep implements Step
 {
     //.. Some constructor logic for initialising the api etc...
     
-    public function execute($state)
+    public function execute(CustomerPurchase $state)
     {
-        $state['paymentId'] = $this->customerApi->debit($state['Amount']);
-        return $state;
+        $paymentId = $this->customerApi->debit($state['Amount']);
+        return $state->markAsPaid($paymentId);
     }
 
     public function compensate($state): void
     {
-        $this->customerApi->refundAccountForPayment($state['paymentId'])
+        $this->customerApi->refundAccountForPayment($state->paymentId)
     }
 ```
 
@@ -45,23 +45,23 @@ class BookFlightStep implements Step
 {
     //.. Some constructor logic for initialising the api etc...
     
-    public function execute($state)
+    public function execute(FlightPurchase $state)
     {
-        $state['flightsBookingRef'] = $this->flightApi->buildBooking(
-            $state['Destination'], 
-            $state['Origin'],
+        $flightsBookingRef = $this->flightApi->buildBooking(
+            $state->Destination, 
+            $state->Origin,
             self::RETURN,
             $this->airline
         );
-        if ($state['flightsBookingRef'] === null) {
+        if ($flightsBookingRef=== null) {
             raise \Exception("Unable to book flights");
         }
-        return $state;
+        return $state->flightsBooked($flightsBookingRef);
     }
 
     public function compensate($state): void
     {
-        $this->customerApi->cancelFlights($state['flightsBookingRef'])
+        $this->customerApi->cancelFlights($state->flightsBookingRef)
     }
 ```
 
