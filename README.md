@@ -30,7 +30,7 @@ class DebitCustomerBalanceStep implements Step
     
     public function execute(CustomerPurchase $state)
     {
-        $paymentId = $this->customerApi->debit($state['Amount']);
+        $paymentId = $this->customerApi->debit($state->Amount);
         return $state->markAsPaid($paymentId);
     }
 
