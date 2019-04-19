@@ -97,6 +97,7 @@ class Transaction
                 $step->compensate($completedStep->state);
                 $this->logger->debug("Compensation complete for step {$this->stepName($step)} [{$stepId}]");
             } catch (\Throwable $error) {
+                $this->logger->debug("Compensation failed for step {$this->stepName($step)} [{$stepId}]");
                 $errors[] = $error;
             }
         }
