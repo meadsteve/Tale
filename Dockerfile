@@ -18,5 +18,3 @@ COPY composer.json /app/composer.json
 RUN composer install
 
 COPY . /app/
-
-CMD ./run_tests.sh
