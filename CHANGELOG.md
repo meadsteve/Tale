@@ -8,6 +8,19 @@
 
 ### Backwards incompatible changes
 
+## v0.4.0 (2019-04-19)
+
+### Enhancements
+* Adds a CloneableState class which triggers automatic copying
+of the state between steps.
+
+### Bug fixes
+None
+
+### Backwards incompatible changes
+None
+
+
 ## v0.3.0 (2019-04-18)
 
 ### Enhancements
