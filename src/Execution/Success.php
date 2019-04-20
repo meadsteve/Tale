@@ -2,6 +2,8 @@
 
 namespace MeadSteve\Tale\Execution;
 
+use MeadSteve\Tale\State\CloneableState;
+
 class Success implements TransactionResult
 {
     /**
@@ -25,6 +27,9 @@ class Success implements TransactionResult
 
     public function finalState()
     {
+        if ($this->finalState instanceof CloneableState) {
+            return $this->finalState->cloneState();
+        }
         return $this->finalState;
     }
 }

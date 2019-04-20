@@ -84,5 +84,51 @@ request a distributed transaction can be built:
 If any step along the way fails then the compensate method on each step
 is called in reverse order until everything is undone.
 
+## State immutability
+The current state is passed from one step to the next. This same state is also
+used to compensate for the transactions in the event of a failure further on
+in the transaction. Since this is the case it is important that implementations
+consider making the state immutable. 
+
+Tale provides a `CloneableState` interface to help with this. Any state implementing
+this interface will have its `cloneState` method called before being passed to a step
+ensuring that steps won't share references to the same state.
+```php
+        class FakeState implements CloneableState
+        {
+                public function cloneState()
+                {
+                    return clone $this;
+                }
+        }
+        
+        $stepOne = new LambdaStep(
+            function (MyStateExample $state) {
+                $state->mutateTheState = "step one"
+                return $state;
+            }
+        );
+        $stepTwo = new LambdaStep(
+            function (MyStateExample $state) {
+                $state->mutateTheState = "step two"
+                return $state;
+            }
+        );
+        $transaction = (new Transaction())
+            ->add($stepOne)
+            ->add($stepTwo);
+
+        $startingState = new MyStateExample();
+        $finalState = $transaction->run($startingState)->finalState();
+```
+In the example above `$startingState`, `$finalState` and `$state` given to both function
+calls are all clones of each other so changing one won't affect any earlier states.
+
 ## Testing / Development
-TODO
+Contributions are very welcome. Please open an issue first if the change is large or will 
+break backwards compatibility.
+ 
+All builds must pass the travis tests before merge. 
+Running `./run_tests.sh` will run the same tests as travis.yml but locally.
+
+The dockerfile provides an environment that can execute all the tests & static analysis.

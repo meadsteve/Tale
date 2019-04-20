@@ -7,6 +7,7 @@ use MeadSteve\Tale\Execution\CompletedStep;
 use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Execution\Success;
 use MeadSteve\Tale\Execution\TransactionResult;
+use MeadSteve\Tale\State\CloneableState;
 use MeadSteve\Tale\Steps\FinalisingStep;
 use MeadSteve\Tale\Steps\NamedStep;
 use MeadSteve\Tale\Steps\Step;
@@ -61,10 +62,8 @@ class Transaction
         $completedSteps = [];
         foreach ($this->steps as $key => $step) {
             try {
-                $this->logger->debug("Executing {$this->stepName($step)} step [$key]");
-                $state = $step->execute($state);
+                $state = $this->executeStep($key, $step, $state);
                 $completedSteps[] = new CompletedStep($step, $state, $key);
-                $this->logger->debug("Execution of {$this->stepName($step)} step [$key] complete");
             } catch (\Throwable $failure) {
                 $this->logger->debug("Failed executing {$this->stepName($step)} step [$key]");
                 $this->revertCompletedSteps($completedSteps);
@@ -90,13 +89,14 @@ class Transaction
     {
         $errors = [];
         foreach (array_reverse($completedSteps) as $completedStep) {
+            $step = $completedStep->step;
+            $stepId = $completedStep->stepId;
             try {
-                $step = $completedStep->step;
-                $stepId = $completedStep->stepId;
                 $this->logger->debug("Compensating for step {$this->stepName($step)} [{$stepId}]");
                 $step->compensate($completedStep->state);
                 $this->logger->debug("Compensation complete for step {$this->stepName($step)} [{$stepId}]");
             } catch (\Throwable $error) {
+                $this->logger->debug("Compensation failed for step {$this->stepName($step)} [{$stepId}]");
                 $errors[] = $error;
             }
         }
@@ -127,5 +127,16 @@ class Transaction
             return "`{$step->stepName()}`";
         }
         return "anonymous step";
+    }
+
+    private function executeStep($number, Step $step, $state)
+    {
+        if ($state instanceof CloneableState) {
+            $state = $state->cloneState();
+        }
+        $this->logger->debug("Executing {$this->stepName($step)} step [$number]");
+        $state = $step->execute($state);
+        $this->logger->debug("Execution of {$this->stepName($step)} step [$number] complete");
+        return $state;
     }
 }
