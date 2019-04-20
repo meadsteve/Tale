@@ -2,12 +2,10 @@
 
 namespace MeadSteve\Tale\Tests;
 
-use Gamez\Psr\Log\TestLogger;
 use MeadSteve\Tale\Exceptions\FailedApplyingAllCompensations;
 use MeadSteve\Tale\Execution\Failure;
 use MeadSteve\Tale\Steps\LambdaStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\FailingStep;
-use MeadSteve\Tale\Tests\Steps\Mocks\MockFinalisingStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\MockStep;
 use MeadSteve\Tale\Tests\Steps\Mocks\StepWithFailingCompensate;
 use MeadSteve\Tale\Transaction;
@@ -138,45 +136,6 @@ class TransactionTest extends TestCase
             ->finalState();
 
         $this->assertEquals("expected_result", $result);
-    }
-
-    public function testFinaliseMethodsAreCalledIfTheTransactionIsASuccess()
-    {
-
-        $mockStep = new MockFinalisingStep();
-        $transaction = (new Transaction())
-            ->add($mockStep);
-
-        $transaction
-            ->run("expected_result")
-            ->finalState();
-
-        $this->assertEquals("expected_result", $mockStep->finalisedState);
-    }
-
-    public function testFinaliseMethodsArentCalledIfTheTransactionFails()
-    {
-
-        $mockStep = new MockFinalisingStep();
-        $transaction = (new Transaction())
-            ->add($mockStep)
-            ->add(new FailingStep());
-
-        $transaction
-            ->run("expected_result")
-            ->finalState();
-
-        $this->assertNull($mockStep->finalisedState);
-    }
-
-    public function testProvidedLoggerGetsSomeDebugLogs()
-    {
-        $mockStep = new MockStep();
-        $mockLogger = new TestLogger();
-        $transaction = (new Transaction($mockLogger))->add($mockStep);
-        $transaction->run("starting_state");
-
-        $this->assertTrue($mockLogger->log->countRecordsWithLevel("debug") > 0);
     }
 
     public function testFailuresInCompensationAreCaught()
