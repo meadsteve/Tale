@@ -49,5 +49,4 @@ class StateTest extends TestCase
         $this->assertNotEquals($stateOne, $stateTwo);
         $this->assertNotEquals($stateTwo, $finalState);
     }
-
 }

@@ -89,9 +89,9 @@ class Transaction
     {
         $errors = [];
         foreach (array_reverse($completedSteps) as $completedStep) {
+            $step = $completedStep->step;
+            $stepId = $completedStep->stepId;
             try {
-                $step = $completedStep->step;
-                $stepId = $completedStep->stepId;
                 $this->logger->debug("Compensating for step {$this->stepName($step)} [{$stepId}]");
                 $step->compensate($completedStep->state);
                 $this->logger->debug("Compensation complete for step {$this->stepName($step)} [{$stepId}]");
