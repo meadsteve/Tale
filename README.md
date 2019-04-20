@@ -125,4 +125,10 @@ In the example above `$startingState`, `$finalState` and `$state` given to both 
 calls are all clones of each other so changing one won't affect any earlier states.
 
 ## Testing / Development
-TODO
+Contributions are very welcome. Please open an issue first if the change is large or will 
+break backwards compatibility.
+ 
+All builds must pass the travis tests before merge. 
+Running `./run_tests.sh` will run the same tests as travis.yml but locally.
+
+The dockerfile provides an environment that can execute all the tests & static analysis.
