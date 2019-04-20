@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
- set -ex
+set -ex
 
-docker-compose run tale  /tools/infection.phar
+docker-compose run tale /tools/infection.phar
