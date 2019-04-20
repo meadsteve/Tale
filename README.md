@@ -88,7 +88,7 @@ is called in reverse order until everything is undone.
 The current state is passed from one step to the next. This same state is also
 used to compensate for the transactions in the event of a failure further on
 in the transaction. Since this is the case it is important that implementations
-treat consider making the state immutable. 
+consider making the state immutable. 
 
 Tale provides a `CloneableState` interface to help with this. Any state implementing
 this interface will have its `cloneState` method called before being passed to a step
